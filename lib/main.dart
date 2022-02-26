@@ -12,6 +12,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Startup Name Generator',
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+        ),
+      ),
       home: RandomWords(),
     );
   }
@@ -45,30 +51,34 @@ class _RandomWordsState extends State<RandomWords> {
   }
 
   void _pushSaved() {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) {
-      final tiles = _saved.map(
-        (pair) {
-          return ListTile(
-            title: Text(
-              pair.asPascalCase,
-              style: _biggerFont,
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          final tiles = _saved.map(
+            (pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+          final divided = tiles.isNotEmpty
+              ? ListTile.divideTiles(
+                  context: context,
+                  tiles: tiles,
+                ).toList()
+              : <Widget>[];
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Saved Suggestions'),
             ),
+            body: ListView(children: divided),
           );
         },
-      );
-      final divided = tiles.isNotEmpty
-          ? ListTile.divideTiles(
-              context: context,
-              tiles: tiles,
-            ).toList()
-          : <Widget>[];
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Saved Suggestions'),
-        ),
-        body: ListView(children: divided),
-      );
-    }));
+      ),
+    );
   }
 
   Widget _buildSuggestions() {
@@ -100,13 +110,15 @@ class _RandomWordsState extends State<RandomWords> {
         semanticLabel: alreadySaved ? 'Remove from saved' : 'Save',
       ),
       onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
+        setState(
+          () {
+            if (alreadySaved) {
+              _saved.remove(pair);
+            } else {
+              _saved.add(pair);
+            }
+          },
+        );
       },
     );
   }
